@@ -18,7 +18,9 @@
 			}
 		],
 		"paths": {
-			"@/*": ["./src/*"]
+			"@/*": ["./src/*"],
+			"@/hooks/*": ["./src/common/hooks/*"],
+			"@/providers/*": ["./src/common/providers/*"]
 		},
 		"target": "ES2023"
 	},
