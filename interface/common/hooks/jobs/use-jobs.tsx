@@ -7,5 +7,6 @@ export default function useJobs() {
 		queryKey: ["jobs"],
 		queryFn: () =>
 			axios.get("http://localhost:5018/api/Jobs").then((res) => res.data),
+		refetchInterval: 5000,
 	});
 }

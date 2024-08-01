@@ -1,3 +1,4 @@
+using API.Models.Devices;
 using API.Models.Shared;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,4 +11,6 @@ public class HomeDbContext : DbContext
     }
     
     public DbSet<Log> Logs { get; set; }
+    
+    public DbSet<Device> Devices { get; set; }
 }

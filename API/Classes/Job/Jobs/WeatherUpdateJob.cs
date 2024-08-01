@@ -6,7 +6,7 @@ public class WeatherUpdateJob : JobBase
     private readonly ILogger<WeatherUpdateJob> _logger;
     
     public override string Name => "Weather Update Job";
-    public override TimeSpan Interval => TimeSpan.FromSeconds(10);
+    public override TimeSpan Interval => TimeSpan.FromMinutes(5);
     
     public WeatherUpdateJob(ILogger<WeatherUpdateJob> logger) {
         _logger = logger;

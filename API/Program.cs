@@ -1,5 +1,7 @@
 using API.Data;
 using API.Extensions;
+using API.Interfaces.Devices;
+using API.Services.Devices;
 using API.Services.Job;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +13,8 @@ builder.Services.InitializeJobs();
 
 builder.Services.AddSingleton<JobManager>();
 builder.Services.AddHostedService<JobManager>(sp => sp.GetRequiredService<JobManager>());
+
+builder.Services.AddScoped<IDeviceService, DeviceService>();
 
 builder.Services.AddSwaggerGen(c =>
 {
