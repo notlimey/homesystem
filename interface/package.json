@@ -1,0 +1,25 @@
+{
+  "name": "interface",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "babel-plugin-react-compiler": "0.0.0-experimental-334f00b-20240725",
+    "next": "15.0.0-rc.0",
+    "react": "19.0.0-rc-06d0b89e-20240801",
+    "react-dom": "19.0.0-rc-06d0b89e-20240801"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}
