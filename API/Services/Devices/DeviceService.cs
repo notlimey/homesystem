@@ -11,10 +11,12 @@ namespace API.Services.Devices;
 public class DeviceService : IDeviceService
 {
     private readonly HomeDbContext _context;
+    private readonly ILogger<DeviceService> _logger;
 
-    public DeviceService(HomeDbContext context)
+    public DeviceService(HomeDbContext context, ILogger<DeviceService> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public async Task<List<Device>> GetDevicesAsync()
@@ -69,17 +71,36 @@ public class DeviceService : IDeviceService
 
     public async Task<bool> WakeOnLanAsync(Guid id)
     {
+       
         var device = await _context.Devices.FindAsync(id);
         if (device == null)
+        {
+            _logger.LogWarning($"Device with id {id} not found");
             return false;
+        }
 
         try
         {
             WakeOnLan.WakeUp(device.MacAddress, device);
-            return true;
+            _logger.LogInformation($"Wake-on-LAN packet sent successfully to {device.Name}");
+        
+            // Wait for the device to wake up
+            for (int i = 0; i < 5; i++)
+            {
+                await Task.Delay(5000); // Wait 5 seconds between checks
+                if (await PingAsync(id))
+                {
+                    _logger.LogInformation($"Device {device.Name} is now online");
+                    return true;
+                }
+            }
+        
+            _logger.LogWarning($"Device {device.Name} did not respond after wake attempt");
+            return false;
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, $"Error sending Wake-on-LAN packet to {device.Name}");
             return false;
         }
     }
@@ -189,15 +210,10 @@ public static class WakeOnLan
 
     private static void SendWakeOnLanPacket(byte[] magicPacket, Device device)
     {
-        // WoL is typically sent as a UDP packet to port 9
-        int WOL_PORT = device.MagicPacketPort;
-
         using (var client = new UdpClient())
         {
             client.EnableBroadcast = true;
-
-            // Send the packet to the broadcast address
-            var endpoint = new IPEndPoint(IPAddress.Broadcast, WOL_PORT);
+            var endpoint = new IPEndPoint(IPAddress.Parse(device.IP), device.MagicPacketPort);
             client.Send(magicPacket, magicPacket.Length, endpoint);
         }
     }

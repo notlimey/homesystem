@@ -27,6 +27,9 @@ public class WeatherUpdateJob : JobBase
             
                 stopwatch.Stop();
                 _logger.LogInformation("Weather Update Job completed. Execution time: {ExecutionTime}", stopwatch.Elapsed);
+                
+                this.LastRun = DateTime.UtcNow;
+                this.NextRun = DateTime.UtcNow.Add(Interval);
             }
             catch (Exception ex)
             {

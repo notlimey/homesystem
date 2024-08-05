@@ -52,7 +52,7 @@ public class JobManager : BackgroundService
 
     public IEnumerable<JobStatus> GetJobStatuses()
     {
-        return _jobs.Select(j => new JobStatus { Name = j.Name, IsRunning = j.IsRunning });
+        return _jobs.Select(j => new JobStatus { Name = j.Name, IsRunning = j.IsRunning, NextRun = j.NextRun, LastRun = j.LastRun });
     }
 
 }
@@ -60,4 +60,11 @@ public class JobStatus
 {
     public string Name { get; set; }
     public bool IsRunning { get; set; }
+    
+    public DateTime LastRun { get; set; }
+    
+    public DateTime NextRun { get; set; }
+    
+    public string LastRunReadable => LastRun.ToString("yyyy-MM-dd HH:mm:ss");
+    public string NextRunReadable => NextRun.ToString("yyyy-MM-dd HH:mm:ss");
 }

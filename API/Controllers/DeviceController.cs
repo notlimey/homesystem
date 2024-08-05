@@ -30,4 +30,11 @@ public class DeviceController
         });
         return createdDevice;
     }
+    
+    [HttpPost("{id}/wake-on-lan")]
+    public async Task<bool> WakeOnLan(Guid id)
+    {
+        var success = await _deviceService.WakeOnLanAsync(id);
+        return success;
+    }
 }

@@ -18,14 +18,20 @@ export default function Home() {
 					</h3>
 					{isPending && <p>Loading...</p>}
 					{data?.map((job) => (
-						<div key={job.name} className="flex items-center gap-x-2">
-							<div
-								className={clsx(
-									job.isRunning ? "bg-green-500" : "bg-red-500",
-									"w-2 h-2 rounded-full",
-								)}
-							/>
-							{job.name}
+						<div key={job.name} className="flex flex-col">
+							<div className="flex items-center gap-x-2">
+								<div
+									className={clsx(
+										job.isRunning ? "bg-green-500 animate-pulse" : "bg-red-500",
+										"w-2 h-2 rounded-full",
+									)}
+								/>
+								{job.name}
+							</div>
+							<div className="text-sm text-muted-foreground">
+								{new Date(job.lastRun).toLocaleString("nb-NO")} -{" "}
+								{new Date(job.nextRun).toLocaleString("nb-NO")}
+							</div>
 						</div>
 					))}
 				</div>

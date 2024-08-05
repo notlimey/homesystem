@@ -10,6 +10,8 @@ public abstract class JobBase : IJob
     public abstract string Name { get; }
     public abstract TimeSpan Interval { get; }
     public bool IsRunning => _executingTask != null && !_executingTask.IsCompleted;
+    public DateTime LastRun { get; set; }
+    public DateTime NextRun { get; set; }
 
     public abstract Task ExecuteAsync(CancellationToken cancellationToken);
 
