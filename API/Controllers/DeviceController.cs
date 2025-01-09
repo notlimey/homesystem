@@ -34,8 +34,9 @@ public class DeviceController
             IP = dto.IP,
             Name = dto.Name,
             SupportMagicPacket = dto.SupportMagicPacket,
-            MagicPacketPort = dto.MagicPacketPort  ?? 9,
+            MagicPacketPort = dto.MagicPacketPort ?? 9,
             MacAddress = dto.MacAddress,
+            MainTask = dto.MainTask
         });
         return createdDevice;
     }
@@ -45,6 +46,36 @@ public class DeviceController
     public async Task<bool> WakeOnLan(Guid id)
     {
         var success = await _deviceService.WakeOnLanAsync(id);
+        
         return success;
+    }
+    
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateDevice(Guid id, CreateDeviceDTO dto)
+    {
+        var device = await _deviceService.GetDeviceByIdAsync(id);
+        if (device == null)
+            return new NotFoundResult();
+        
+        device.IP = dto.IP;
+        device.Name = dto.Name;
+        device.SupportMagicPacket = dto.SupportMagicPacket;
+        device.MagicPacketPort = dto.MagicPacketPort ?? 9;
+        device.MacAddress = dto.MacAddress;
+        device.MainTask = dto.MainTask;
+
+        var updatedDevice = await _deviceService.UpdateDeviceAsync(id, device);
+        if (updatedDevice == null)
+            return new NotFoundResult();
+        return new OkResult();
+    }
+    
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteDevice(Guid id)
+    {
+        var success = await _deviceService.DeleteDeviceAsync(id);
+        if (!success)
+            return new NotFoundResult();
+        return new OkResult();
     }
 }

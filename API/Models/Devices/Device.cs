@@ -17,6 +17,10 @@ public class Device
     
     public int MagicPacketPort { get; set; } = 9;
     
+    public bool SupportsBluetooth { get; set; }
+    
+    public string MainTask  { get; set; } = string.Empty;
+    
     [Required]
     public string MacAddress { get; set; } = string.Empty;
     

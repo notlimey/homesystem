@@ -13,4 +13,16 @@ public class HomeDbContext : DbContext
     public DbSet<Log> Logs { get; set; }
     
     public DbSet<Device> Devices { get; set; }
+    
+    // ip address and mac address must be unique
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Device>()
+            .HasIndex(d => d.IP)
+            .IsUnique();
+        
+        modelBuilder.Entity<Device>()
+            .HasIndex(d => d.MacAddress)
+            .IsUnique();
+    }
 }

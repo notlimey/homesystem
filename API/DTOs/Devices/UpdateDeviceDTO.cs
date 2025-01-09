@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace API.DTOs.Devices;
 
-public class CreateDeviceDTO
+public class UpdateDeviceDTO
 {
     [Required]
     public string Name { get; set; } = string.Empty;

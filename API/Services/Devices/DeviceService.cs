@@ -71,7 +71,6 @@ public class DeviceService : IDeviceService
 
     public async Task<bool> WakeOnLanAsync(Guid id)
     {
-       
         var device = await _context.Devices.FindAsync(id);
         if (device == null)
         {
@@ -81,20 +80,24 @@ public class DeviceService : IDeviceService
 
         try
         {
-            WakeOnLan.WakeUp(device.MacAddress, device);
-            _logger.LogInformation($"Wake-on-LAN packet sent successfully to {device.Name}");
+            _logger.LogInformation($"Attempting to wake device {device.Name} with MAC {device.MacAddress}");
+        
+            await WakeOnLan.WakeUpAsync(device.MacAddress, device);
         
             // Wait for the device to wake up
             for (int i = 0; i < 5; i++)
             {
-                await Task.Delay(5000); // Wait 5 seconds between checks
+                _logger.LogInformation($"Checking if device {device.Name} is online (attempt {i + 1}/5)");
+                await Task.Delay(5000);
+            
                 if (await PingAsync(id))
                 {
                     _logger.LogInformation($"Device {device.Name} is now online");
                     return true;
                 }
+                _logger.LogInformation($"Device {device.Name} not responding to ping yet");
             }
-        
+    
             _logger.LogWarning($"Device {device.Name} did not respond after wake attempt");
             return false;
         }
@@ -104,6 +107,7 @@ public class DeviceService : IDeviceService
             return false;
         }
     }
+
 
     public async Task<bool> PingAsync(Guid id)
     {
@@ -156,24 +160,53 @@ public class DeviceService : IDeviceService
 
 public static class WakeOnLan
 {
-    
     private static readonly ILogger _logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger("WakeOnLan");
-    public static void WakeUp(string macAddress, Device device)
+    
+    public static async Task WakeUpAsync(string macAddress, Device device)
     {
-        
         if (string.IsNullOrEmpty(macAddress))
             throw new ArgumentNullException(nameof(macAddress));
 
         try
         {
             byte[] magicPacket = CreateMagicPacket(macAddress);
-            SendWakeOnLanPacket(magicPacket, device);
-            _logger.LogInformation($"Wake-on-LAN packet sent to {macAddress}");
+            
+            // Use the global broadcast address 255.255.255.255
+            var broadcastAddress = IPAddress.Broadcast;
+            
+            _logger.LogInformation($"Sending magic packet to 255.255.255.255:9 with payload {macAddress}");
+            
+            await SendWakeOnLanPacketAsync(magicPacket, broadcastAddress);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Error sending Wake-on-LAN packet to {macAddress}");
             throw;
+        }
+    }
+
+    private static async Task SendWakeOnLanPacketAsync(byte[] magicPacket, IPAddress targetAddress)
+    {
+        using (var client = new UdpClient())
+        {
+            client.EnableBroadcast = true;
+            client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
+            
+            var endpoint = new IPEndPoint(targetAddress, 9); // Using port 9
+            
+            // Send the packet multiple times for reliability
+            for (int i = 0; i < 3; i++)
+            {
+                try
+                {
+                    await client.SendAsync(magicPacket, magicPacket.Length, endpoint);
+                    await Task.Delay(100);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning($"Failed to send WoL packet to {targetAddress}:9 - {ex.Message}");
+                }
+            }
         }
     }
 
@@ -192,55 +225,21 @@ public static class WakeOnLan
             macAddressBytes[i] = Convert.ToByte(macAddress.Substring(i * 2, 2), 16);
         }
 
-        // Create the magic packet
-        using (var ms = new System.IO.MemoryStream())
-        {
-            // Add 6 bytes of 0xFF
-            ms.Write(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF }, 0, 6);
+        // Create the magic packet (102 bytes)
+        byte[] magicPacket = new byte[102];
+        
+        // First 6 bytes should be 0xFF
+        for (int i = 0; i < 6; i++)
+            magicPacket[i] = 0xFF;
+        
+        // Repeat MAC address 16 times (16 * 6 = 96 bytes)
+        for (int i = 1; i <= 16; i++)
+            Array.Copy(macAddressBytes, 0, magicPacket, i * 6, 6);
 
-            // Repeat MAC address 16 times
-            for (int i = 0; i < 16; i++)
-            {
-                ms.Write(macAddressBytes, 0, 6);
-            }
-
-            return ms.ToArray();
-        }
-    }
-
-    private static void SendWakeOnLanPacket(byte[] magicPacket, Device device)
-    {
-        using (var client = new UdpClient())
-        {
-            client.EnableBroadcast = true;
-            var endpoint = new IPEndPoint(IPAddress.Parse(device.IP), device.MagicPacketPort);
-            client.Send(magicPacket, magicPacket.Length, endpoint);
-        }
-    }
-
-    public static async Task WakeUpAsync(string macAddress)
-    {
-        if (string.IsNullOrEmpty(macAddress))
-            throw new ArgumentNullException(nameof(macAddress));
-
-        byte[] magicPacket = CreateMagicPacket(macAddress);
-
-        await SendWakeOnLanPacketAsync(magicPacket);
-    }
-
-    private static async Task SendWakeOnLanPacketAsync(byte[] magicPacket)
-    {
-        const int WOL_PORT = 9;
-
-        using (var client = new UdpClient())
-        {
-            client.EnableBroadcast = true;
-
-            var endpoint = new IPEndPoint(IPAddress.Broadcast, WOL_PORT);
-            await client.SendAsync(magicPacket, magicPacket.Length, endpoint);
-        }
+        return magicPacket;
     }
 }
+
 
 public static class ArpLookup
 {
