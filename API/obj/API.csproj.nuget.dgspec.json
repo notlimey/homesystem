@@ -1,30 +1,30 @@
 {
   "format": 1,
   "restore": {
-    "/Users/martinmyhre/Documents/Repositories/Random/homesystem/API/API.csproj": {}
+    "/Users/martinmyhre/Documents/repos/inmeta/homesystem/API/API.csproj": {}
   },
   "projects": {
-    "/Users/martinmyhre/Documents/Repositories/Random/homesystem/API/API.csproj": {
+    "/Users/martinmyhre/Documents/repos/inmeta/homesystem/API/API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/martinmyhre/Documents/Repositories/Random/homesystem/API/API.csproj",
+        "projectUniqueName": "/Users/martinmyhre/Documents/repos/inmeta/homesystem/API/API.csproj",
         "projectName": "API",
-        "projectPath": "/Users/martinmyhre/Documents/Repositories/Random/homesystem/API/API.csproj",
+        "projectPath": "/Users/martinmyhre/Documents/repos/inmeta/homesystem/API/API.csproj",
         "packagesPath": "/Users/martinmyhre/.nuget/packages/",
-        "outputPath": "/Users/martinmyhre/Documents/Repositories/Random/homesystem/API/obj/",
+        "outputPath": "/Users/martinmyhre/Documents/repos/inmeta/homesystem/API/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/martinmyhre/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net8.0"
+          "net9.0"
         ],
         "sources": {
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net8.0": {
-            "targetAlias": "net8.0",
+          "net9.0": {
+            "targetAlias": "net9.0",
             "projectReferences": {}
           }
         },
@@ -37,11 +37,12 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
-        "net8.0": {
-          "targetAlias": "net8.0",
+        "net9.0": {
+          "targetAlias": "net9.0",
           "dependencies": {
             "FastEndpoints": {
               "target": "Package",
@@ -53,25 +54,25 @@
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[8.0.7, )"
+              "version": "[9.0.0, )"
             },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[8.0.7, )"
+              "version": "[9.0.0, )"
             },
             "Microsoft.Extensions.Logging": {
               "target": "Package",
-              "version": "[8.0.0, )"
+              "version": "[9.0.0, )"
             },
             "Microsoft.Extensions.Logging.Console": {
               "target": "Package",
-              "version": "[8.0.0, )"
+              "version": "[9.0.0, )"
             },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
-              "version": "[8.0.4, )"
+              "version": "[9.0.2, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -97,7 +98,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.204/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

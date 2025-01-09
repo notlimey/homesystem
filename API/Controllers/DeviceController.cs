@@ -16,6 +16,15 @@ public class DeviceController
     {
         _deviceService = deviceService;
     }
+
+    [HttpGet]
+    public async Task<List<Device>> GetAllDevices()
+    {
+        var devices = await _deviceService.GetDevicesAsync();
+        
+        return devices;
+    }
+
     
     [HttpPost]
     public async Task<Device?> CreateDevice(CreateDeviceDTO dto)
@@ -30,6 +39,7 @@ public class DeviceController
         });
         return createdDevice;
     }
+
     
     [HttpPost("{id}/wake-on-lan")]
     public async Task<bool> WakeOnLan(Guid id)
