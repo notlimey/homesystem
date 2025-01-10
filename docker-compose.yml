@@ -14,6 +14,27 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
+  api:
+    build:
+      context: ./API
+      dockerfile: Dockerfile
+    container_name: api-service
+    ports:
+      - "8080:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    networks:
+      - app-network
+    depends_on:
+      - db
+    restart: unless-stopped
+
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   postgres_data:
+
