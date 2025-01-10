@@ -14,29 +14,39 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - app-network    # Add this to connect to the network
+    healthcheck:       # Add healthcheck for database
+      test: ["CMD-SHELL", "pg_isready -U myuser -d home_server_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   api:
     build:
       context: ./API
       dockerfile: Dockerfile
     container_name: api-service
     ports:
-      - "0.0.0.0:8080:80"  # This binds to all network interfaces
+      - "0.0.0.0:8080:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      # Add these to ensure proper hosting
       - ASPNETCORE_HOSTNAME=0.0.0.0
       - ASPNETCORE_HTTP_PORTS=80
+      # Add database connection string
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=home_server_db;Username=myuser;Password=mypassword
     networks:
       - app-network
     restart: unless-stopped
-    # Add healthcheck
+    depends_on:       # Add dependency on db
+      db:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-
 
 networks:
   app-network:
@@ -44,4 +54,3 @@ networks:
 
 volumes:
   postgres_data:
-
