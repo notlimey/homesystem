@@ -26,8 +26,6 @@ services:
       - ASPNETCORE_URLS=http://+:80
     networks:
       - app-network
-    depends_on:
-      - db
     restart: unless-stopped
 
 
