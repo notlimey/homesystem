@@ -20,13 +20,22 @@ services:
       dockerfile: Dockerfile
     container_name: api-service
     ports:
-      - "8080:80"
+      - "0.0.0.0:8080:80"  # This binds to all network interfaces
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
+      # Add these to ensure proper hosting
+      - ASPNETCORE_HOSTNAME=0.0.0.0
+      - ASPNETCORE_HTTP_PORTS=80
     networks:
       - app-network
     restart: unless-stopped
+    # Add healthcheck
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 
 networks:

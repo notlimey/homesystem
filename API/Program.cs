@@ -22,12 +22,20 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 
+// Configure Kestrel
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenAnyIP(80); // Listen on port 80 on all network interfaces
+});
+
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
         builder =>
         {
-            builder.WithOrigins("http://localhost:3000") // Allow your Next.js app's origin
+            builder
+                .AllowAnyOrigin()   
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
